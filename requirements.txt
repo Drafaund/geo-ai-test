@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic-settings
+opencv-python
+numpy
+rasterio
+geopandas
+shapely
+pyyaml
+
+# testing
+pytest
+httpx

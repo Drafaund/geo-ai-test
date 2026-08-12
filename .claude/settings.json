@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/d/App/miniconda3/envs/DataAndAI/python.exe\" -m pip list)",
+      "Bash(/d/App/miniconda3/envs/DataAndAI/python.exe -c ' *)",
+      "Bash(\"/d/App/miniconda3/envs/DataAndAI/python.exe\" -m uvicorn app.main:app --host 127.0.0.1 --port 8123 --log-level info)",
+      "Bash(timeout 30 bash -c 'until grep -qE \"Uvicorn running|Error|Traceback\" \"C:\\\\Users\\\\faund\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--UGM-Kuliah-8th-Semester-geo-ai-test\\\\7743af1c-38c0-44a4-b972-e44f41c3818c\\\\tasks\\\\bacrrrglb.output\" 2>/dev/null; do sleep 1; done; cat \"C:\\\\Users\\\\faund\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--UGM-Kuliah-8th-Semester-geo-ai-test\\\\7743af1c-38c0-44a4-b972-e44f41c3818c\\\\tasks\\\\bacrrrglb.output\"')",
+      "Bash(curl -s http://127.0.0.1:8123/health)",
+      "Bash(time curl -s -X POST \"http://127.0.0.1:8123/api/v1/detect\" -F \"file=@sawit.tif;type=image/tiff\" -o /tmp/detect_response.json -w \"HTTP_STATUS:%{http_code}\\\\n\")",
+      "Bash(curl -s -X POST \"http://127.0.0.1:8123/api/v1/detect\" -F \"file=@sawit.tif;type=image/tiff\" -o \"C:\\\\Users\\\\faund\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--UGM-Kuliah-8th-Semester-geo-ai-test\\\\7743af1c-38c0-44a4-b972-e44f41c3818c\\\\scratchpad\\\\detect_response.json\" -w \"HTTP_STATUS:%{http_code}\\\\n\")",
+      "Bash(curl -s -X POST \"http://127.0.0.1:8123/api/v1/detect?output=shapefile\" -F \"file=@sawit.tif;type=image/tiff\" -o \"C:\\\\Users\\\\faund\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--UGM-Kuliah-8th-Semester-geo-ai-test\\\\7743af1c-38c0-44a4-b972-e44f41c3818c\\\\scratchpad\\\\detect.zip\" -w \"HTTP_STATUS:%{http_code}\\\\n\")",
+      "Bash(curl -s -X POST \"http://127.0.0.1:8123/api/v1/detect\" -F \"file=@C:\\\\Users\\\\faund\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--UGM-Kuliah-8th-Semester-geo-ai-test\\\\7743af1c-38c0-44a4-b972-e44f41c3818c\\\\scratchpad\\\\bad.tif\" -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\")",
+      "Bash(curl -s -X POST \"http://127.0.0.1:8123/api/v1/detect\" -F \"file=@script.py\" -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\")",
+      "Bash(curl -s http://127.0.0.1:8123/openapi.json -o \"C:\\\\Users\\\\faund\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--UGM-Kuliah-8th-Semester-geo-ai-test\\\\7743af1c-38c0-44a4-b972-e44f41c3818c\\\\scratchpad\\\\openapi.json\" -w \"HTTP_STATUS:%{http_code}\\\\n\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8123/health)",
+      "Bash(timeout 30 bash -c 'until curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8123/health 2>/dev/null | grep -q 200; do sleep 1; done; curl -s http://127.0.0.1:8123/health')",
+      "Bash(\"/d/App/miniconda3/envs/DataAndAI/python.exe\" -m pytest tests/ -v)",
+      "Bash(\"/d/App/miniconda3/envs/DataAndAI/python.exe\" -c \"from app.config import settings; print\\(settings\\)\")",
+      "Bash(\"/d/App/miniconda3/envs/DataAndAI/python.exe\" -m pytest tests/ -q)",
+      "Bash(python -m pip list)"
+    ]
+  }
+}
