@@ -214,3 +214,47 @@ Mengunduh `result.zip` berisi `.shp`/`.shx`/`.dbf`/`.prj`/`.cpg`.
   seperti kode asli); raster yang sangat besar akan membuat satu request
   memakan waktu lebih lama (sawit.tif — 36 tile — memakan waktu ±23 detik
   end-to-end di mesin ini).
+- **Raster berukuran sangat besar (dimensi piksel maupun ukuran file):**
+  - *Pembacaan raster* sudah aman untuk ukuran berapa pun — `tiling.py`
+    memakai windowed read dari `rasterio`, jadi raster tidak pernah dimuat
+    penuh ke memori, hanya dibaca per-tile sesuai kebutuhan.
+  - *Tapi* pipeline berjalan **sinkron dalam satu request HTTP** dan
+    tile diproses **satu per satu secara berurutan** (dikunci
+    `threading.Lock` di `PalmDetector`, karena `cv2.dnn.Net` tidak aman
+    dipanggil paralel) — waktu proses naik linear terhadap jumlah tile.
+    Raster besar (mis. orthomosaic ribuan tile) bisa membuat request
+    berjalan sampai bermenit-menit, berisiko kena timeout di sisi
+    client/reverse-proxy (banyak yang defaultnya 30–60 detik).
+  - Tidak ada validasi/batas ukuran file upload — file yang sangat besar
+    akan tetap diterima dan diproses dulu sebelum ketahuan gagal (atau
+    memenuhi folder temp) daripada ditolak di awal.
+  - Jika jumlah deteksi jadi sangat banyak (puluhan ribu titik), response
+    `output=json` bisa menjadi besar dan lambat di-serialize/transfer,
+    karena semua deteksi dikembalikan sekaligus dalam satu body JSON
+    (tidak ada paginasi).
+
+## Saran pengembangan
+
+Kalau ke depannya API ini perlu menangani raster yang jauh lebih besar
+dari `sawit.tif` (mis. orthomosaic drone skala puluhan-ratusan hektar),
+berikut prioritas perubahan yang disarankan:
+
+1. **Pola job asinkron** — pisahkan `POST /api/v1/detect` menjadi dua
+   endpoint: satu untuk submit (langsung mengembalikan `job_id` tanpa
+   menunggu pipeline selesai), satu lagi untuk polling status/hasil
+   (`GET /api/v1/jobs/{job_id}`). Ini menghilangkan risiko timeout sama
+   sekali, karena klien tidak lagi menunggu satu koneksi HTTP terbuka
+   selama pipeline berjalan.
+2. **Validasi ukuran upload & estimasi jumlah tile di awal** — tolak
+   dengan `413`/`400` sebelum mulai memproses, bukan setelah raster
+   ditulis penuh ke disk.
+3. **Paralelisasi inferensi antar-tile** — saat ini tile diproses
+   berurutan lewat satu lock. Bisa diganti dengan thread/process pool
+   (atau batching beberapa tile sekaligus ke model) untuk memanfaatkan
+   banyak core CPU, selama tetap menjaga akses ke `cv2.dnn.Net` aman.
+4. **Default hasil besar ke file, bukan JSON inline** — kalau jumlah
+   deteksi melewati ambang tertentu, arahkan klien untuk mengunduh
+   `output=shapefile` (atau GeoJSON) alih-alih mengembalikan ribuan objek
+   dalam satu response JSON.
+5. **Dukungan raster terotasi** — generalisasi konversi piksel→koordinat
+   di `pipeline.py` supaya tidak hanya berlaku untuk raster north-up.
